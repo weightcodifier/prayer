@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>목장 기도 대시보드</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f3ec;
+        --surface: #fffdf8;
+        --surface-strong: #ffffff;
+        --ink: #202124;
+        --muted: #6e6258;
+        --line: #e1d8ca;
+        --accent: #2f6f73;
+        --accent-ink: #ffffff;
+        --sage: #dfe9dc;
+        --clay: #d88f66;
+        --rose: #b86b77;
+        --gold: #b18c3c;
+        --blue: #547b9f;
+        --shadow: 0 18px 50px rgba(64, 48, 30, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(180deg, rgba(255, 253, 248, 0.88), rgba(247, 243, 236, 0.96)),
+          radial-gradient(circle at top left, rgba(47, 111, 115, 0.16), transparent 32rem),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Noto Sans KR",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+        overflow-x: hidden;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .login-page {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .login-panel {
+        width: min(100%, 440px);
+        padding: 34px;
+        border: 1px solid rgba(225, 216, 202, 0.88);
+        border-radius: 8px;
+        background: rgba(255, 253, 248, 0.94);
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      .login-panel h1,
+      .topbar h1 {
+        margin-bottom: 8px;
+        line-height: 1.15;
+      }
+
+      .login-panel h1 {
+        font-size: 30px;
+      }
+
+      .login-copy {
+        margin-bottom: 26px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .login-form label,
+      .control label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .password-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .password-row input,
+      .toolbar input,
+      .toolbar select {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--ink);
+        outline: none;
+      }
+
+      .password-row input {
+        flex: 1;
+        padding: 13px 14px;
+      }
+
+      .password-row button,
+      .ghost-button {
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 800;
+      }
+
+      .password-row button {
+        padding: 0 18px;
+      }
+
+      .ghost-button {
+        padding: 10px 14px;
+      }
+
+      .login-message {
+        min-height: 22px;
+        margin: 12px 0 0;
+        color: #b43f47;
+        font-size: 13px;
+      }
+
+      .login-message.success {
+        color: #2f6f73;
+        font-weight: 800;
+      }
+
+      .login-form.is-success .password-row {
+        opacity: 0.62;
+        pointer-events: none;
+      }
+
+      .app {
+        width: min(1460px, 100%);
+        margin: 0 auto;
+        padding: 26px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 22px 0;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .meta-chip,
+      .status-pill,
+      .category-pill,
+      .week-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        border-radius: 999px;
+        padding: 5px 11px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: 180px 180px minmax(220px, 1fr);
+        gap: 12px;
+        margin-bottom: 18px;
+        padding: 14px;
+        border: 1px solid rgba(225, 216, 202, 0.78);
+        border-radius: 8px;
+        background: rgba(255, 253, 248, 0.76);
+      }
+
+      .toolbar input,
+      .toolbar select {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 12px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 18px;
+        max-height: calc(100vh - 36px);
+        overflow: auto;
+        padding: 10px;
+        border: 1px solid rgba(225, 216, 202, 0.82);
+        border-radius: 8px;
+        background: rgba(255, 253, 248, 0.82);
+      }
+
+      .person-list {
+        display: grid;
+        gap: 7px;
+        margin-top: 8px;
+      }
+
+      .person-link {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 42px minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        border: 0;
+        border-radius: 8px;
+        padding: 9px;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+      }
+
+      .person-link:hover,
+      .person-link.active {
+        background: #edf3ed;
+      }
+
+      .person-link strong,
+      .person-link small {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .person-link small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .avatar {
+        display: inline-grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--sage);
+        color: #1f4d50;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .avatar.all {
+        border-radius: 8px;
+        background: var(--accent);
+        color: white;
+      }
+
+      .main-view {
+        min-width: 0;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-header h2 {
+        margin-bottom: 4px;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      .section-header p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .kpi-card,
+      .panel,
+      .entry-card,
+      .person-summary-card {
+        border: 1px solid rgba(225, 216, 202, 0.82);
+        border-radius: 8px;
+        background: rgba(255, 253, 248, 0.88);
+        box-shadow: 0 10px 24px rgba(64, 48, 30, 0.06);
+      }
+
+      .kpi-card {
+        min-height: 118px;
+        padding: 18px;
+      }
+
+      .kpi-card span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .kpi-card strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 32px;
+        line-height: 1;
+      }
+
+      .kpi-card p {
+        margin: 9px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+        gap: 18px;
+      }
+
+      .panel {
+        min-width: 0;
+        padding: 18px;
+      }
+
+      .panel h3 {
+        margin-bottom: 14px;
+        font-size: 18px;
+      }
+
+      .entry-grid,
+      .people-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .entry-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .people-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .entry-card,
+      .person-summary-card {
+        padding: 15px;
+      }
+
+      .entry-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .entry-card h3,
+      .person-summary-card h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .entry-card p,
+      .person-summary-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.68;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .entry-card p {
+        color: #3a3732;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .category-pill {
+        background: var(--sage);
+        color: #284f50;
+      }
+
+      .category-pill.health {
+        background: #e8dfe8;
+        color: #784a66;
+      }
+
+      .category-pill.work {
+        background: #e2e9f0;
+        color: #315d80;
+      }
+
+      .category-pill.family {
+        background: #f2e2dc;
+        color: #884f39;
+      }
+
+      .category-pill.faith {
+        background: #e1eadc;
+        color: #3e663e;
+      }
+
+      .category-pill.service {
+        background: #f2ead0;
+        color: #745a1e;
+      }
+
+      .empty-state {
+        display: grid;
+        min-height: 170px;
+        place-items: center;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .progress-list {
+        display: grid;
+        gap: 13px;
+      }
+
+      .progress-item {
+        display: grid;
+        gap: 6px;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .progress-track {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #efe7dc;
+      }
+
+      .progress-bar {
+        height: 100%;
+        border-radius: inherit;
+        background: var(--accent);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip-button {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 10px;
+        background: #ffffff;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .person-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.5fr);
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .verse-box {
+        padding: 20px;
+        border-radius: 8px;
+        background: #263f42;
+        color: #fffdf8;
+      }
+
+      .verse-box p {
+        margin: 0;
+        line-height: 1.72;
+        white-space: pre-wrap;
+      }
+
+      .annual-box {
+        padding: 20px;
+        border-radius: 8px;
+        background: #fffdf8;
+        border: 1px solid rgba(225, 216, 202, 0.82);
+      }
+
+      .timeline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 12px;
+      }
+
+      .timeline-date {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .timeline-body {
+        padding-bottom: 13px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .timeline-body p {
+        margin: 0;
+        line-height: 1.68;
+        white-space: pre-wrap;
+      }
+
+      .small-note {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 1080px) {
+        .layout,
+        .grid-two,
+        .person-hero {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          max-height: none;
+        }
+
+        .person-list {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .kpi-grid,
+        .people-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        body {
+          background:
+            linear-gradient(180deg, rgba(255, 253, 248, 0.92), rgba(247, 243, 236, 0.98)),
+            var(--bg);
+        }
+
+        .login-page {
+          align-items: start;
+          padding: 18px;
+          padding-top: 14vh;
+        }
+
+        .login-panel {
+          padding: 24px 20px;
+        }
+
+        .login-panel h1 {
+          font-size: 25px;
+        }
+
+        .login-copy {
+          margin-bottom: 22px;
+          font-size: 15px;
+        }
+
+        .app {
+          padding: 12px;
+        }
+
+        .topbar,
+        .section-header {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .topbar {
+          gap: 12px;
+          padding: 14px 2px;
+        }
+
+        .topbar h1 {
+          font-size: 24px;
+        }
+
+        .top-actions {
+          justify-content: space-between;
+        }
+
+        .layout {
+          gap: 12px;
+        }
+
+        .sidebar {
+          margin: 0 -12px;
+          max-width: calc(100vw - 0px);
+          border-right: 0;
+          border-left: 0;
+          border-radius: 0;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scrollbar-width: thin;
+        }
+
+        .sidebar,
+        .person-list {
+          display: flex;
+          gap: 8px;
+        }
+
+        .person-list {
+          margin-top: 0;
+        }
+
+        .sidebar .person-link {
+          width: 178px;
+          min-width: 178px;
+          grid-template-columns: 36px minmax(0, 1fr);
+          padding: 8px;
+        }
+
+        .avatar {
+          width: 36px;
+          height: 36px;
+          font-size: 12px;
+        }
+
+        .toolbar,
+        .kpi-grid,
+        .entry-grid,
+        .people-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .toolbar {
+          gap: 10px;
+          padding: 12px;
+        }
+
+        .section-header h2 {
+          font-size: 22px;
+        }
+
+        .kpi-card {
+          min-height: auto;
+          padding: 15px;
+        }
+
+        .kpi-card strong {
+          font-size: 28px;
+        }
+
+        .panel,
+        .entry-card,
+        .person-summary-card,
+        .verse-box,
+        .annual-box {
+          padding: 14px;
+        }
+
+        .entry-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .week-pill,
+        .status-pill,
+        .meta-chip {
+          white-space: normal;
+        }
+
+        .password-row {
+          flex-direction: column;
+        }
+
+        .password-row button {
+          min-height: 44px;
+        }
+
+        .timeline-item {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section id="login" class="login-page">
+      <div class="login-panel">
+        <h1>2026 권혜연 목장 기도 대시보드</h1>
+        <p class="login-copy">암호를 입력하면 우리목장의 기도제목을 확인할 수 있습니다.</p>
+        <form id="loginForm" class="login-form">
+          <label for="passwordInput">접속 암호</label>
+          <div class="password-row">
+            <input id="passwordInput" type="password" autocomplete="current-password" placeholder="암호 입력" />
+            <button type="submit">열기</button>
+          </div>
+          <p id="loginMessage" class="login-message" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <div id="app" class="app" hidden>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Mokjang Prayer Dashboard</p>
+          <h1>목장 기도 대시보드</h1>
+        </div>
+        <div class="top-actions">
+          <span id="generatedAt" class="meta-chip"></span>
+          <button id="logoutButton" class="ghost-button" type="button">잠금</button>
+        </div>
+      </header>
+
+      <section class="toolbar" aria-label="대시보드 필터">
+        <div class="control">
+          <label for="weekSelect">주간</label>
+          <select id="weekSelect"></select>
+        </div>
+        <div class="control">
+          <label for="categorySelect">분류</label>
+          <select id="categorySelect"></select>
+        </div>
+        <div class="control search-control">
+          <label for="searchInput">검색</label>
+          <input id="searchInput" type="search" placeholder="이름, 기도제목, 말씀 검색" />
+        </div>
+      </section>
+
+      <div class="layout">
+        <aside class="sidebar" aria-label="개인별 메뉴">
+          <button id="overviewButton" class="person-link active" type="button">
+            <span class="avatar all">전체</span>
+            <span>
+              <strong>통합 대시보드</strong>
+              <small>이번 주 흐름</small>
+            </span>
+          </button>
+          <div id="personList" class="person-list"></div>
+        </aside>
+
+        <main id="mainView" class="main-view" tabindex="-1"></main>
+      </div>
+    </div>
+
+    <script id="dashboardData" type="application/json">{"version":1,"source":{"file":"26)목장 기도제목.xlsx","sheets":["올해기도제목","1-2월 주간","3월 주간","4월 주간","5월 주간"]},"generatedAt":"2026-05-03T13:45:16.951229+00:00","people":[{"id":"p01","name":"권혜연","initials":"혜연","verse":"여호와께서 너희를 위하여 싸우시리니 너희는 가만히 있을지니라  \n- 출14:14 -","annualPrayer":"부모님과의 정서적으로 건강하게 분리되어 독립적인 사람이 되길\n하나님의 계획 안에서 믿음의 배우자 만나길\n적극적인 진로탐색으로 안정적인 직장을 준비할 수 있도록","color":"#dfe9dc","sort":0},{"id":"p02","name":"김열","initials":"김열","verse":"네 재물과 네 소산물의 처음 익은 열매로 여호와를 공경하라 그리하면 네 창고가 가득히 차고 네 포도즙 틀에 새 포도즙이 넘치리라\n-잠언3:9,10-","annualPrayer":"나를 통해서 만나는 세상 사람들이 주님을 알게 되길","color":"#f2e2dc","sort":1},{"id":"p03","name":"박동수","initials":"동수","verse":"나도 하나님과 사람에 대하여 항상 양심에 거리낌이 없기를 힘쓰나이다  \n-사도행전 24:16-","annualPrayer":"분주함을 잘 정리하여 하나님과 관계를 건강히 쌓아가길","color":"#e2e9f0","sort":2},{"id":"p04","name":"신기완","initials":"기완","verse":"내가 네게 명한 것이 아니냐 마음을 강하게 하고 담대히 하라 두려워 말며 놀라지 말라 네가 어디로 가든지 네 하나님 여호와가 너와 함께 하느니라 하시니라 -여호수아 1:9-","annualPrayer":"창의력, 순발력, 집중력 발휘, \n스트레스 받지 않도록, \n반 년후 복음반과 자격증 시험, \n연애준비","color":"#f2ead0","sort":3},{"id":"p05","name":"유연욱","initials":"연욱","verse":"우리가 시작할 때에 확실한 것을 끝까지 견고히 잡으면 그리스도와 함께 참예한 자가 되리라 \n-히브리서 3:14-","annualPrayer":"취업의 문이 잘 열리길","color":"#e8dfe8","sort":4},{"id":"p06","name":"이동혁","initials":"동혁","verse":"이 모든 일에 전심 전력하여 너의 성숙함을 모든 사람에게 나타나게 하라  \n-딤전4:15-","annualPrayer":"주어진 일과 고통으로 느껴지는 것들이 부르심으로 확인될 수 있는 \n관점의 변화가 이루어지도록","color":"#dce8e7","sort":5},{"id":"p07","name":"조이삭","initials":"이삭","verse":"나는 여호와로 말미암아 즐거워하며 나의 구원의 하나님으로 말미암아 기뻐하리로다 \n -합 3:18-","annualPrayer":"배우자 만남","color":"#eaded3","sort":6},{"id":"p08","name":"최두호","initials":"두호","verse":"구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요 문을 두드리라 그리하면 너희에게 열릴 것이니\n-마7:7-","annualPrayer":"주님이 주시는 평안을 누릴수 있도록(세상불안에 흔들리지 않는) \n배우자 기도","color":"#e7e4d8","sort":7},{"id":"p09","name":"최여름","initials":"여름","verse":"너는 마음을 다하여 여호와를 의뢰하고 네 명철을 의지하지 말라  \n-잠언 3:5-","annualPrayer":"근무평정 잘 받도록","color":"#dfe9dc","sort":8},{"id":"p10","name":"함인성","initials":"인성","verse":"여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요 주의 영광이 하늘을 덮었나이다  \n-시8:1-","annualPrayer":"결혼 준비가 결혼식만의 준비가 아닌 하나님 안에서 언약이 맺어지는 과정이 되기를","color":"#f2e2dc","sort":9},{"id":"p11","name":"김진주","initials":"진주","verse":"너의 행사를 여화와께 맡기라 그리하면 너의 경영하는 것이 이루리라  \n-잠언16:3-","annualPrayer":"열심히 기도드리고 성격 읽는 자녀가 되길, \n하루의 시작과 끝이 주님과 함께 어루어지길","color":"#e2e9f0","sort":10},{"id":"p12","name":"김찬송","initials":"찬송","verse":"우리가 선을 행하되 낙심하지 말찌니 피곤하지  아니하면 때가 이르매 거두리라   -‭갈라디아서‬ ‭6‬:‭9-","annualPrayer":"신앙도 인품도 적절한 속도로 충분히 성장할 수 있도록","color":"#f2ead0","sort":11},{"id":"p13","name":"박정현","initials":"정현","verse":"그런즉 누구든지 그리스도 안에 있으면 새로운 피조물이라 이전 것은 지나갔으니 \n보라 새 것이 되었도다 \n-고후5:17-","annualPrayer":"사역 안에서도 개인적으로 하나님과 멀어지지않도록","color":"#e8dfe8","sort":12},{"id":"p14","name":"장유진","initials":"유진","verse":"사람아 주께서 선한 것이 무엇임을 네게 보이셨나니 여호와께서 네게 구하시는 것은 \n오직 정의를 행하며 인자를 사랑하며 겸손하게 네 하나님과 함께 행하는 것이 아니냐  \n-미가 6:8-","annualPrayer":"주님과 더욱 친밀해지며, 채워지는 한 해 되기를","color":"#dce8e7","sort":13},{"id":"p15","name":"정민정","initials":"민정","verse":"여호와께서 사무엘에게 이르시되 그 용모와 신장을 보지 말라 내가 이미 그를 \n버렸노라 나의 보는 것은 사람과 같지 아니하니 사람은 외모를 보거니와 \n나  여호와는 중심을 보느니라 \n-사무엘상16:7-","annualPrayer":"몸 건강(허리디스크가 나아지길)","color":"#eaded3","sort":14},{"id":"p16","name":"정아름","initials":"아름","verse":"내 형제들아 너희가 여러가지 시험을 만나거든 온전히 기쁘게 여기라 이는 너희 \n믿음의 시련이 인내를 만들어 내는줄 너희가 앎이라 \n-야고보서 1:2-3-","annualPrayer":"살릴 영혼들을 많이 붙여주시길, \n영혼들을 살릴 수 있는 주님의 능력 주시길","color":"#e7e4d8","sort":15}],"weeks":[{"id":"2026-01-25","label":"1.25","month":1,"day":25,"note":"","sheet":"1-2월 주간"},{"id":"2026-02-01","label":"2.1","month":2,"day":1,"note":"","sheet":"1-2월 주간"},{"id":"2026-02-08","label":"2.8","month":2,"day":8,"note":"","sheet":"1-2월 주간"},{"id":"2026-02-15","label":"2.15 설날","month":2,"day":15,"note":"설날","sheet":"1-2월 주간"},{"id":"2026-02-22","label":"2.22 수련회","month":2,"day":22,"note":"수련회","sheet":"1-2월 주간"},{"id":"2026-02-25","label":"2.25","month":2,"day":25,"note":"","sheet":"1-2월 주간"},{"id":"2026-03-01","label":"3.1","month":3,"day":1,"note":"","sheet":"3월 주간"},{"id":"2026-03-08","label":"3.8","month":3,"day":8,"note":"","sheet":"3월 주간"},{"id":"2026-03-15","label":"3.15","month":3,"day":15,"note":"","sheet":"3월 주간"},{"id":"2026-03-22","label":"3.22","month":3,"day":22,"note":"","sheet":"3월 주간"},{"id":"2026-03-29","label":"3.29","month":3,"day":29,"note":"","sheet":"3월 주간"},{"id":"2026-04-05","label":"4.5","month":4,"day":5,"note":"","sheet":"4월 주간"},{"id":"2026-04-12","label":"4.12","month":4,"day":12,"note":"","sheet":"4월 주간"},{"id":"2026-04-26","label":"4.26","month":4,"day":26,"note":"","sheet":"4월 주간"},{"id":"2026-05-03","label":"5.3","month":5,"day":3,"note":"","sheet":"5월 주간"}],"entries":[{"id":"2026-01-25-p01","personId":"p01","personName":"권혜연","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하나님 중심의 삶을 살도록","lines":["하나님 중심의 삶을 살도록"],"categories":["신앙"],"characterCount":14},{"id":"2026-01-25-p11","personId":"p11","personName":"김진주","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하루의 시작과 끝을 하나님과 함께하며 감사로 살아가는 한 주 되길","lines":["하루의 시작과 끝을 하나님과 함께하며 감사로 살아가는 한 주 되길"],"categories":["신앙"],"characterCount":36},{"id":"2026-01-25-p12","personId":"p12","personName":"김찬송","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하나님을 사모하는 마음으로 일에 임하길","lines":["하나님을 사모하는 마음으로 일에 임하길"],"categories":["건강","신앙","일/학업"],"characterCount":21},{"id":"2026-01-25-p03","personId":"p03","personName":"박동수","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"기도의 생활, 은밀한 자리를 지킬 수 있도록","lines":["기도의 생활, 은밀한 자리를 지킬 수 있도록"],"categories":["신앙"],"characterCount":24},{"id":"2026-01-25-p13","personId":"p13","personName":"박정현","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하나님을 더욱 가까이하고, 회개하고 순종하는 한 주 될 수 있도록","lines":["하나님을 더욱 가까이하고, 회개하고 순종하는 한 주 될 수 있도록"],"categories":["신앙"],"characterCount":36},{"id":"2026-01-25-p04","personId":"p04","personName":"신기완","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하나님 안에서 스트레스 회복, 하나님 안에서 교제","lines":["하나님 안에서 스트레스 회복, 하나님 안에서 교제"],"categories":["건강","가정/관계","신앙"],"characterCount":27},{"id":"2026-01-25-p05","personId":"p05","personName":"유연욱","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"비교보디는 공감하는 열린자세를 가질 수 있도록","lines":["비교보디는 공감하는 열린자세를 가질 수 있도록"],"categories":["기타"],"characterCount":25},{"id":"2026-01-25-p06","personId":"p06","personName":"이동혁","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"하나님을 의식하며 살아갈 수 있도록","lines":["하나님을 의식하며 살아갈 수 있도록"],"categories":["신앙"],"characterCount":19},{"id":"2026-01-25-p14","personId":"p14","personName":"장유진","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"3주간의 데코팀 준비를 재밌게 할 수 있도록, \nTF팀 은혜롭게 준비할 수 있길","lines":["3주간의 데코팀 준비를 재밌게 할 수 있도록,","TF팀 은혜롭게 준비할 수 있길"],"categories":["신앙"],"characterCount":44},{"id":"2026-01-25-p15","personId":"p15","personName":"정민정","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"팀장님과의 불편한 관계가 원활히 해결될 수 있도록","lines":["팀장님과의 불편한 관계가 원활히 해결될 수 있도록"],"categories":["가정/관계"],"characterCount":27},{"id":"2026-01-25-p16","personId":"p16","personName":"정아름","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"맡겨주신 영혼을 위해 기도하고, 지치지 않고 내려놓을 수 있도록, 서유선 선생님 다음주에 오는 데 하나님의 도우심이 있도록","lines":["맡겨주신 영혼을 위해 기도하고, 지치지 않고 내려놓을 수 있도록, 서유선 선생님 다음주에 오는 데 하나님의 도우심이 있도록"],"categories":["신앙"],"characterCount":68},{"id":"2026-01-25-p07","personId":"p07","personName":"조이삭","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"은밀한 자리로 나아갈 수 있도록","lines":["은밀한 자리로 나아갈 수 있도록"],"categories":["기타"],"characterCount":17},{"id":"2026-01-25-p09","personId":"p09","personName":"최여름","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"다치지 않고 연습한 훈련들이 잘 풀리는 한 주가 되기를!","lines":["다치지 않고 연습한 훈련들이 잘 풀리는 한 주가 되기를!"],"categories":["기타"],"characterCount":31},{"id":"2026-01-25-p10","personId":"p10","personName":"함인성","weekId":"2026-01-25","weekLabel":"1.25","sheet":"1-2월 주간","content":"규칙적으로 하루 1번 기도로 시작하고 마무리할 수 있길","lines":["규칙적으로 하루 1번 기도로 시작하고 마무리할 수 있길"],"categories":["신앙"],"characterCount":30},{"id":"2026-02-01-p01","personId":"p01","personName":"권혜연","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"목장 안 어색함이 해결될 수 있도록\n하나님이 인도하시는 일터를 찾을 수 있도록","lines":["목장 안 어색함이 해결될 수 있도록","하나님이 인도하시는 일터를 찾을 수 있도록"],"categories":["일/학업","사역/섬김","신앙"],"characterCount":43},{"id":"2026-02-01-p11","personId":"p11","personName":"김진주","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"한 주를 감사함으로 채울 수 있도록, \n일을 병행하면서 체력 관리를 잘할 수 있도록","lines":["한 주를 감사함으로 채울 수 있도록,","일을 병행하면서 체력 관리를 잘할 수 있도록"],"categories":["건강","일/학업"],"characterCount":46},{"id":"2026-02-01-p12","personId":"p12","personName":"김찬송","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"일상에 작은 목표들을 세우고 기쁨으로 이룰 수 있는 힘을 주시길","lines":["일상에 작은 목표들을 세우고 기쁨으로 이룰 수 있는 힘을 주시길"],"categories":["일/학업"],"characterCount":35},{"id":"2026-02-01-p03","personId":"p03","personName":"박동수","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"개강 전 일정을 잘 마무리할 수 있도록 힘을 주시길","lines":["개강 전 일정을 잘 마무리할 수 있도록 힘을 주시길"],"categories":["일/학업"],"characterCount":28},{"id":"2026-02-01-p04","personId":"p04","personName":"신기완","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"통독과 바리스타 시험 준비하면서 스트레스와 건강 관리를 잘할 수 있도록","lines":["통독과 바리스타 시험 준비하면서 스트레스와 건강 관리를 잘할 수 있도록"],"categories":["건강","일/학업"],"characterCount":39},{"id":"2026-02-01-p05","personId":"p05","personName":"유연욱","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"삶 속에서 말씀과 기도의 시간을 회복할 수 있도록\n시간 관리를 잘할 수 있는 의지 더해주시길","lines":["삶 속에서 말씀과 기도의 시간을 회복할 수 있도록","시간 관리를 잘할 수 있는 의지 더해주시길"],"categories":["신앙","건강"],"characterCount":51},{"id":"2026-02-01-p06","personId":"p06","personName":"이동혁","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"한 주도 주님을 의식하며 살아갈 수 있도록","lines":["한 주도 주님을 의식하며 살아갈 수 있도록"],"categories":["신앙"],"characterCount":23},{"id":"2026-02-01-p14","personId":"p14","personName":"장유진","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"선하신 하나님을 묵상하는 한 주 되길, \n프로젝트를 잘 감당할 수 있도록 \n(시안과 고객을 포함한 모든 요소에서 잘 인도해 주시길)","lines":["선하신 하나님을 묵상하는 한 주 되길,","프로젝트를 잘 감당할 수 있도록","(시안과 고객을 포함한 모든 요소에서 잘 인도해 주시길)"],"categories":["신앙"],"characterCount":73},{"id":"2026-02-01-p16","personId":"p16","personName":"정아름","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"지인들의 영혼을 돌보아주시길, \n교회 잘 나올 수 있도록, 청소년 상담을 위한 학업의 자리로 인도해 주시길","lines":["지인들의 영혼을 돌보아주시길,","교회 잘 나올 수 있도록, 청소년 상담을 위한 학업의 자리로 인도해 주시길"],"categories":["일/학업"],"characterCount":59},{"id":"2026-02-01-p07","personId":"p07","personName":"조이삭","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"일과 학업을 병행하는 동안 힘을 주시도록","lines":["일과 학업을 병행하는 동안 힘을 주시도록"],"categories":["일/학업"],"characterCount":22},{"id":"2026-02-01-p09","personId":"p09","personName":"최여름","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"영어 공부에 착수할 수 있는 여건을 만들어주시길, \n권위에 순종할 수 있는 마음을 주시길","lines":["영어 공부에 착수할 수 있는 여건을 만들어주시길,","권위에 순종할 수 있는 마음을 주시길"],"categories":["건강","신앙","일/학업"],"characterCount":49},{"id":"2026-02-01-p10","personId":"p10","personName":"함인성","weekId":"2026-02-01","weekLabel":"2.1","sheet":"1-2월 주간","content":"하나님과의 은밀한 교제를 지속할 수 있도록, \n결혼식 날짜를 결정하는 데에 있어서 인도해 주시길","lines":["하나님과의 은밀한 교제를 지속할 수 있도록,","결혼식 날짜를 결정하는 데에 있어서 인도해 주시길"],"categories":["가정/관계","신앙"],"characterCount":53},{"id":"2026-02-08-p01","personId":"p01","personName":"권혜연","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.새 직장에서 아이들을 하나님의 마음으로 교육할 수 있도록\n2.수련회에서 목원들이 은혜 받을 수 있도록","lines":["새 직장에서 아이들을 하나님의 마음으로 교육할 수 있도록","수련회에서 목원들이 은혜 받을 수 있도록"],"categories":["신앙","일/학업","가정/관계"],"characterCount":58},{"id":"2026-02-08-p11","personId":"p11","personName":"김진주","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.부모님의 믿음 회복을 위해서\n2.주변 사람들에에 자신의 약함을 나눌 수 있는 마음이 생기도록\n3.같은 비전을 공유하는 배우자를 만날 수 있도록\n4.삶 속에서 말씀을 붙들 수 있도록","lines":["부모님의 믿음 회복을 위해서","주변 사람들에에 자신의 약함을 나눌 수 있는 마음이 생기도록","같은 비전을 공유하는 배우자를 만날 수 있도록","삶 속에서 말씀을 붙들 수 있도록"],"categories":["가정/관계","신앙","건강"],"characterCount":102},{"id":"2026-02-08-p12","personId":"p12","personName":"김찬송","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1. 일상에 작은 목표들을 세우고 기쁨으로 이룰 수 있는 힘을 주시길","lines":["일상에 작은 목표들을 세우고 기쁨으로 이룰 수 있는 힘을 주시길"],"categories":["일/학업"],"characterCount":38},{"id":"2026-02-08-p03","personId":"p03","personName":"박동수","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.학원 예산 감사를 은혜로 잘 통과할 수 있도록\n2.앞으로의 사역에 필요한 지혜를 주시도록\n3.결혼을 반대받는 상황에서 믿음으로 잘 통과할 수 있도록","lines":["학원 예산 감사를 은혜로 잘 통과할 수 있도록","앞으로의 사역에 필요한 지혜를 주시도록","결혼을 반대받는 상황에서 믿음으로 잘 통과할 수 있도록"],"categories":["신앙","가정/관계","사역/섬김"],"characterCount":84},{"id":"2026-02-08-p13","personId":"p13","personName":"박정현","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.두려움을 하나님과 함께 마주할 수 있도록\n2.새로운 도전에 대한 용기를 가질 수 있도록","lines":["두려움을 하나님과 함께 마주할 수 있도록","새로운 도전에 대한 용기를 가질 수 있도록"],"categories":["신앙"],"characterCount":50},{"id":"2026-02-08-p04","personId":"p04","personName":"신기완","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.일할 때 대인관계에 대한 어려움\n2.진로에 대한 고민","lines":["일할 때 대인관계에 대한 어려움","진로에 대한 고민"],"categories":["일/학업","가정/관계"],"characterCount":31},{"id":"2026-02-08-p05","personId":"p05","personName":"유연욱","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"예배의 자리를 귀히 여길 수 있도록","lines":["예배의 자리를 귀히 여길 수 있도록"],"categories":["신앙"],"characterCount":19},{"id":"2026-02-08-p06","personId":"p06","personName":"이동혁","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.이번주 외국 선생님과 첫 레슨에 나아갈 때 부담을 내려놓을 수 있도록\n2.개인의 약함을 자연스럽게 여길 수 있도록","lines":["이번주 외국 선생님과 첫 레슨에 나아갈 때 부담을 내려놓을 수 있도록","개인의 약함을 자연스럽게 여길 수 있도록"],"categories":["기타"],"characterCount":65},{"id":"2026-02-08-p14","personId":"p14","personName":"장유진","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.수련회 준비로 바쁜데 모두 지치지 않고 평화롭게 잘 진행되기를!\n2.흔들리지 않는 믿음을 허락해주시기를","lines":["수련회 준비로 바쁜데 모두 지치지 않고 평화롭게 잘 진행되기를!","흔들리지 않는 믿음을 허락해주시기를"],"categories":["사역/섬김","신앙"],"characterCount":59},{"id":"2026-02-08-p15","personId":"p15","personName":"정민정","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"직장에서 친절함과 온유한 마음으로 나아갈 수 있도록","lines":["직장에서 친절함과 온유한 마음으로 나아갈 수 있도록"],"categories":["건강","일/학업"],"characterCount":28},{"id":"2026-02-08-p16","personId":"p16","personName":"정아름","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.전 직장에서 받지 못한 돈이 있어야 할 곳으로 잘 돌아올 수 있도록\n2.지인들의 영혼 구원을 위해서","lines":["전 직장에서 받지 못한 돈이 있어야 할 곳으로 잘 돌아올 수 있도록","지인들의 영혼 구원을 위해서"],"categories":["일/학업"],"characterCount":57},{"id":"2026-02-08-p07","personId":"p07","personName":"조이삭","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1. 일과 학업을 병행하는 동안 힘을 주시도록","lines":["일과 학업을 병행하는 동안 힘을 주시도록"],"categories":["일/학업"],"characterCount":25},{"id":"2026-02-08-p09","personId":"p09","personName":"최여름","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"미래를 위해 해야할 일을 미루지 않고 담대하게 해주세요!","lines":["미래를 위해 해야할 일을 미루지 않고 담대하게 해주세요!"],"categories":["일/학업"],"characterCount":31},{"id":"2026-02-08-p10","personId":"p10","personName":"함인성","weekId":"2026-02-08","weekLabel":"2.8","sheet":"1-2월 주간","content":"1.일터에서 구별되고 믿음의 증인이 될 수 있는 삶을 살 수 있도록\n2.차를 잘 구할 수 있도록","lines":["일터에서 구별되고 믿음의 증인이 될 수 있는 삶을 살 수 있도록","차를 잘 구할 수 있도록"],"categories":["일/학업","신앙"],"characterCount":53},{"id":"2026-02-25-p01","personId":"p01","personName":"권혜연","weekId":"2026-02-25","weekLabel":"2.25","sheet":"1-2월 주간","content":"1.기도가운데 하나님의 도우심을 구하며 신학기 준비할 수 있길,\n2..가정 안에 평안이 임하길","lines":["기도가운데 하나님의 도우심을 구하며 신학기 준비할 수 있길,",".가정 안에 평안이 임하길"],"categories":["신앙","가정/관계","건강"],"characterCount":52},{"id":"2026-02-25-p11","personId":"p11","personName":"김진주","weekId":"2026-02-25","weekLabel":"2.25","sheet":"1-2월 주간","content":"주님의 계획 하심을 믿고 기도하며 계속 나아가길","lines":["주님의 계획 하심을 믿고 기도하며 계속 나아가길"],"categories":["신앙"],"characterCount":26},{"id":"2026-02-25-p14","personId":"p14","personName":"장유진","weekId":"2026-02-25","weekLabel":"2.25","sheet":"1-2월 주간","content":"1.주님과의 친밀한 만남과 동행을  계속 붙잡고 이어갈 수 있기를\n2.지혜롭게 일할 수 있기를","lines":["주님과의 친밀한 만남과 동행을  계속 붙잡고 이어갈 수 있기를","지혜롭게 일할 수 있기를"],"categories":["신앙","일/학업"],"characterCount":52},{"id":"2026-02-25-p07","personId":"p07","personName":"조이삭","weekId":"2026-02-25","weekLabel":"2.25","sheet":"1-2월 주간","content":"말씀을 사모할 수 있도록","lines":["말씀을 사모할 수 있도록"],"categories":["신앙"],"characterCount":13},{"id":"2026-02-25-p10","personId":"p10","personName":"함인성","weekId":"2026-02-25","weekLabel":"2.25","sheet":"1-2월 주간","content":"1. 하나님의 지혜와 분별력이 삶 속에 임하며, 나의 시선이 하나님의 시선이 되기를🙏\n2. 하나님과 교제하는 시간을 잘 지키며 은혜를 충만히 누리도록","lines":["하나님의 지혜와 분별력이 삶 속에 임하며, 나의 시선이 하나님의 시선이 되기를🙏","하나님과 교제하는 시간을 잘 지키며 은혜를 충만히 누리도록"],"categories":["신앙","가정/관계"],"characterCount":83},{"id":"2026-03-01-p01","personId":"p01","personName":"권혜연","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.두려움과 불안을 마주할 때 하나님의 방식대로 일할 수 있었으면\n2.큐티의 자리를 지키고 삶으로 살아낼 수 있도록","lines":["두려움과 불안을 마주할 때 하나님의 방식대로 일할 수 있었으면","큐티의 자리를 지키고 삶으로 살아낼 수 있도록"],"categories":["신앙","건강","일/학업"],"characterCount":64},{"id":"2026-03-01-p12","personId":"p12","personName":"김찬송","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.말씀 묵상의 깊이를 위해 큐티를 지속할 수 있도록\n2.안주하고싶은 마음을 이길 수 있도록","lines":["말씀 묵상의 깊이를 위해 큐티를 지속할 수 있도록","안주하고싶은 마음을 이길 수 있도록"],"categories":["신앙","건강"],"characterCount":51},{"id":"2026-03-01-p04","personId":"p04","personName":"신기완","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"여행을 안전하게 잘 다녀올 수 있도록, 행복한 시간을 보내고 올 수 있도록","lines":["여행을 안전하게 잘 다녀올 수 있도록, 행복한 시간을 보내고 올 수 있도록"],"categories":["기타"],"characterCount":41},{"id":"2026-03-01-p05","personId":"p05","personName":"유연욱","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.학업을 지속할 수 있는 체력을 더하여주시길\n2.하루의 시작과 끝에 말씀으로 나아갈 수 있도록","lines":["학업을 지속할 수 있는 체력을 더하여주시길","하루의 시작과 끝에 말씀으로 나아갈 수 있도록"],"categories":["건강","신앙","일/학업"],"characterCount":53},{"id":"2026-03-01-p06","personId":"p06","personName":"이동혁","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.기도하는 태도를 지속하는 힘과 하나님과의 관계에서 인내를 발휘할 수 있도록\n2.개인의 문제를 해결하기 위해서 묵상하고 기도하는 시간을 회복할 수 있도록","lines":["기도하는 태도를 지속하는 힘과 하나님과의 관계에서 인내를 발휘할 수 있도록","개인의 문제를 해결하기 위해서 묵상하고 기도하는 시간을 회복할 수 있도록"],"categories":["신앙","가정/관계","건강"],"characterCount":86},{"id":"2026-03-01-p14","personId":"p14","personName":"장유진","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.주님의 인도하심을 믿음으로 신뢰하는 매일이 되기를\n2.컨디션을 잘 회복하고 에너지를 지혜롭게 쓸 수 있기를","lines":["주님의 인도하심을 믿음으로 신뢰하는 매일이 되기를","컨디션을 잘 회복하고 에너지를 지혜롭게 쓸 수 있기를"],"categories":["신앙","건강","일/학업"],"characterCount":61},{"id":"2026-03-01-p16","personId":"p16","personName":"정아름","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.말씀을 가까이 하며 잠언을 잘 묵상할 수 있도록\n2.새 학기를 지치지 않고 감당할 수 있도록\n3.아이들을 향한 긍휼한 마음과 각자의 다름을 인정할 수 있도록","lines":["말씀을 가까이 하며 잠언을 잘 묵상할 수 있도록","새 학기를 지치지 않고 감당할 수 있도록","아이들을 향한 긍휼한 마음과 각자의 다름을 인정할 수 있도록"],"categories":["건강","신앙"],"characterCount":89},{"id":"2026-03-01-p10","personId":"p10","personName":"함인성","weekId":"2026-03-01","weekLabel":"3.1","sheet":"3월 주간","content":"1.통제할 수 없는 일에 대해서 감당할 수 있는 마음과 힘을 주시도록\n2.출근과 퇴근, 업무시간 속에서 하나님을 찾으며 나아갈 수 있도록","lines":["통제할 수 없는 일에 대해서 감당할 수 있는 마음과 힘을 주시도록","출근과 퇴근, 업무시간 속에서 하나님을 찾으며 나아갈 수 있도록"],"categories":["일/학업","건강","신앙"],"characterCount":76},{"id":"2026-03-08-p01","personId":"p01","personName":"권혜연","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 큐티하는 삶\n2. 유치원 적응, 아이들 사랑","lines":["큐티하는 삶","유치원 적응, 아이들 사랑"],"categories":["가정/관계","신앙"],"characterCount":27},{"id":"2026-03-08-p11","personId":"p11","personName":"김진주","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 말씀 보며 하나님과 동행\n2. 부모님의 구원","lines":["말씀 보며 하나님과 동행","부모님의 구원"],"categories":["가정/관계","신앙"],"characterCount":27},{"id":"2026-03-08-p04","personId":"p04","personName":"신기완","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 건강관리\n2. 바리스티자격증 준비, 자조모임 잘 참여하도록","lines":["건강관리","바리스티자격증 준비, 자조모임 잘 참여하도록"],"categories":["건강"],"characterCount":35},{"id":"2026-03-08-p15","personId":"p15","personName":"정민정","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 건강관리 계속 잘 할 수 있도록\n2. 현재 생활 계속 유지할 수 있도록","lines":["건강관리 계속 잘 할 수 있도록","현재 생활 계속 유지할 수 있도록"],"categories":["건강"],"characterCount":42},{"id":"2026-03-08-p16","personId":"p16","personName":"정아름","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 새학기 아이들 관리 잘 할 수 있도록\n2. 아이들 사랑하고 기도할 수 있는 마음 주시길","lines":["새학기 아이들 관리 잘 할 수 있도록","아이들 사랑하고 기도할 수 있는 마음 주시길"],"categories":["가정/관계","건강","신앙"],"characterCount":51},{"id":"2026-03-08-p07","personId":"p07","personName":"조이삭","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"업무, 학업 가운데 지혜를 간구할 수 있길","lines":["업무, 학업 가운데 지혜를 간구할 수 있길"],"categories":["일/학업"],"characterCount":23},{"id":"2026-03-08-p09","personId":"p09","personName":"최여름","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"3월 훈련이 많은데 준비하는데에 부족함없고, 안전하게 잘 진행될 수 있도록","lines":["3월 훈련이 많은데 준비하는데에 부족함없고, 안전하게 잘 진행될 수 있도록"],"categories":["기타"],"characterCount":41},{"id":"2026-03-08-p10","personId":"p10","personName":"함인성","weekId":"2026-03-08","weekLabel":"3.8","sheet":"3월 주간","content":"1. 왼쪽 두번째 발가락이 얼른 낫길(면역력관리 잘 하도록)","lines":["왼쪽 두번째 발가락이 얼른 낫길(면역력관리 잘 하도록)"],"categories":["기타"],"characterCount":33},{"id":"2026-03-15-p01","personId":"p01","personName":"권혜연","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 교육계획 하나님의 지혜로 잘 짜도록\n2. 통제하려는 마음을 하나님께 맡기기","lines":["교육계획 하나님의 지혜로 잘 짜도록","통제하려는 마음을 하나님께 맡기기"],"categories":["건강","신앙","일/학업"],"characterCount":44},{"id":"2026-03-15-p11","personId":"p11","personName":"김진주","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 주님 말씀 안에서 지혜롭게 지내갈 수 있길\n2.매일 기도하며 기도의 힘을 알아갈 수 있길","lines":["주님 말씀 안에서 지혜롭게 지내갈 수 있길","매일 기도하며 기도의 힘을 알아갈 수 있길"],"categories":["신앙","일/학업"],"characterCount":52},{"id":"2026-03-15-p13","personId":"p13","personName":"박정현","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"하나님께서 주신 삶이라는 것을 잊지 않고 맡겨진 것에 성실히 임할 수 있도록","lines":["하나님께서 주신 삶이라는 것을 잊지 않고 맡겨진 것에 성실히 임할 수 있도록"],"categories":["신앙"],"characterCount":42},{"id":"2026-03-15-p04","personId":"p04","personName":"신기완","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 스트레스 해소, 직장 적응 \n2. 건강관리(운동)","lines":["스트레스 해소, 직장 적응","건강관리(운동)"],"categories":["건강","일/학업"],"characterCount":30},{"id":"2026-03-15-p06","personId":"p06","personName":"이동혁","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"바쁘고 정신없는 한 주 속에서도 하나님을 중심으로 두고 살길","lines":["바쁘고 정신없는 한 주 속에서도 하나님을 중심으로 두고 살길"],"categories":["신앙"],"characterCount":33},{"id":"2026-03-15-p14","personId":"p14","personName":"장유진","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 분주한 마음 내려놓고 하나 씩 일을 진행할 수 있도록\n2.일과 관계에 대해 하나님께 맡길 수 있도록(관계의 분별)","lines":["분주한 마음 내려놓고 하나 씩 일을 진행할 수 있도록","일과 관계에 대해 하나님께 맡길 수 있도록(관계의 분별)"],"categories":["가정/관계","건강","신앙"],"characterCount":66},{"id":"2026-03-15-p16","personId":"p16","personName":"정아름","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 전도하려고 하는 분들이 하나님 앞에 잘 돌아올 수 있도록\n2. 한 학기 맡은 아이들을 사랑으로 잘 돌볼 수 있도록\n3. 학원이 하나님 안에서 잘 되길","lines":["전도하려고 하는 분들이 하나님 앞에 잘 돌아올 수 있도록","한 학기 맡은 아이들을 사랑으로 잘 돌볼 수 있도록","학원이 하나님 안에서 잘 되길"],"categories":["가정/관계","신앙","일/학업"],"characterCount":86},{"id":"2026-03-15-p09","personId":"p09","personName":"최여름","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"다음 주 큰 훈련도 안전하게 마무리 할 수 있게 도와주세요","lines":["다음 주 큰 훈련도 안전하게 마무리 할 수 있게 도와주세요"],"categories":["기타"],"characterCount":32},{"id":"2026-03-15-p10","personId":"p10","personName":"함인성","weekId":"2026-03-15","weekLabel":"3.15","sheet":"3월 주간","content":"1. 업무 수행 가운데 방향의 키를 하나님께 맡길 수 있길\n2. 마음이 분주해지지 않고 하나님께 맡길 수 있도록","lines":["업무 수행 가운데 방향의 키를 하나님께 맡길 수 있길","마음이 분주해지지 않고 하나님께 맡길 수 있도록"],"categories":["건강","신앙","일/학업"],"characterCount":62},{"id":"2026-03-22-p01","personId":"p01","personName":"권혜연","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 말씀, 기도 생활하길\n2. 전문성 신장을 위해 특수교육 공부를\n열심히 할 수 있길","lines":["말씀, 기도 생활하길","전문성 신장을 위해 특수교육 공부를","열심히 할 수 있길"],"categories":["신앙","일/학업"],"characterCount":48},{"id":"2026-03-22-p11","personId":"p11","personName":"김진주","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1.  한 주를 잘 버틸 수 있는 체력 주시길\n2. 주님의 생각대로 살 수 있도록","lines":["한 주를 잘 버틸 수 있는 체력 주시길","주님의 생각대로 살 수 있도록"],"categories":["건강","신앙"],"characterCount":45},{"id":"2026-03-22-p13","personId":"p13","personName":"박정현","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"받은 은혜를 지혜롭게 흘려보낼 수 있는 한 주 되기를 기도합니다.","lines":["받은 은혜를 지혜롭게 흘려보낼 수 있는 한 주 되기를 기도합니다."],"categories":["신앙"],"characterCount":36},{"id":"2026-03-22-p04","personId":"p04","personName":"신기완","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 목요일 퇴근한 다음 헌혈하고 나서 피로감이 덜 생기도록","lines":["목요일 퇴근한 다음 헌혈하고 나서 피로감이 덜 생기도록"],"categories":["건강","신앙","일/학업"],"characterCount":33},{"id":"2026-03-22-p14","personId":"p14","personName":"장유진","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 선교가는 친구들을 계속 중보\n2. 분주한 마음 내려놓고 하나씩 일을 진행하길","lines":["선교가는 친구들을 계속 중보","분주한 마음 내려놓고 하나씩 일을 진행하길"],"categories":["가정/관계","건강","사역/섬김"],"characterCount":45},{"id":"2026-03-22-p15","personId":"p15","personName":"정민정","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 건강하게 다치지 않고 운동할 수 있도록","lines":["건강하게 다치지 않고 운동할 수 있도록"],"categories":["건강"],"characterCount":24},{"id":"2026-03-22-p16","personId":"p16","personName":"정아름","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 교육대학원 입학을 잘 준비해서 9,10월에 공부를 시작할 수 있길\n2. 전도한 선생님 새신자 교육 잘 마무리해서 목장배치를 받아서 교회나올 수 있길\n3. 비젼에 대한 길을 하나님께서 명확히 알려주시길","lines":["교육대학원 입학을 잘 준비해서 9,10월에 공부를 시작할 수 있길","전도한 선생님 새신자 교육 잘 마무리해서 목장배치를 받아서 교회나올 수 있길","비젼에 대한 길을 하나님께서 명확히 알려주시길"],"categories":["일/학업","사역/섬김","신앙"],"characterCount":114},{"id":"2026-03-22-p07","personId":"p07","personName":"조이삭","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 신앙의 제자를 삼을 수 있도록\n2. 배우자를 만날 수 있길","lines":["신앙의 제자를 삼을 수 있도록","배우자를 만날 수 있길"],"categories":["가정/관계","사역/섬김"],"characterCount":35},{"id":"2026-03-22-p08","personId":"p08","personName":"최두호","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 평안하고 자유로운 한 주 보내길","lines":["평안하고 자유로운 한 주 보내길"],"categories":["건강"],"characterCount":20},{"id":"2026-03-22-p10","personId":"p10","personName":"함인성","weekId":"2026-03-22","weekLabel":"3.22","sheet":"3월 주간","content":"1. 삶 가운데 영적 전쟁에 승리할 수 있길","lines":["삶 가운데 영적 전쟁에 승리할 수 있길"],"categories":["신앙"],"characterCount":24},{"id":"2026-03-29-p01","personId":"p01","personName":"권혜연","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 하나님 안에서 부모님이 영육간에 건강함이 생겨나길\n2. 특수교육 공부하길","lines":["하나님 안에서 부모님이 영육간에 건강함이 생겨나길","특수교육 공부하길"],"categories":["가정/관계","일/학업","건강"],"characterCount":43},{"id":"2026-03-29-p02","personId":"p02","personName":"김열","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 스트레스 덜 받고 내려놓을 수 있는 마음 가지며 나쁜 것들은 자연스럽게 흘려보낼 수 있길","lines":["스트레스 덜 받고 내려놓을 수 있는 마음 가지며 나쁜 것들은 자연스럽게 흘려보낼 수 있길"],"categories":["건강"],"characterCount":52},{"id":"2026-03-29-p13","personId":"p13","personName":"박정현","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 하나님 안에서 잘 붙들려 살 수 있는 한주 되기를\n2. 사역 일정들 속에서 건강할수있도록\n3. 결단이 필요한 일에 집중해서 기도할수있도록","lines":["하나님 안에서 잘 붙들려 살 수 있는 한주 되기를","사역 일정들 속에서 건강할수있도록","결단이 필요한 일에 집중해서 기도할수있도록"],"categories":["신앙","건강","사역/섬김"],"characterCount":79},{"id":"2026-03-29-p04","personId":"p04","personName":"신기완","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 하나님 안에서 삶의 고통을 느껴서 하나님의 마음을 알 수 있도록","lines":["하나님 안에서 삶의 고통을 느껴서 하나님의 마음을 알 수 있도록"],"categories":["건강","신앙"],"characterCount":38},{"id":"2026-03-29-p06","personId":"p06","personName":"이동혁","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 뭘 하면 기분이 좋아질 지 파악하고 행복한 일을 찾을 수 있길\n2. 무너지지 않고 하나님 안에서 잘 견뎌내길(완벽주의 성향 내려놓기)","lines":["뭘 하면 기분이 좋아질 지 파악하고 행복한 일을 찾을 수 있길","무너지지 않고 하나님 안에서 잘 견뎌내길(완벽주의 성향 내려놓기)"],"categories":["신앙","일/학업"],"characterCount":77},{"id":"2026-03-29-p14","personId":"p14","personName":"장유진","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 하나님의 사랑을 묵상하고 기억하길\n2. 이번주에 해야할 일들을 지혜롭게 잘 할 수 있길","lines":["하나님의 사랑을 묵상하고 기억하길","이번주에 해야할 일들을 지혜롭게 잘 할 수 있길"],"categories":["가정/관계","신앙","일/학업"],"characterCount":51},{"id":"2026-03-29-p15","personId":"p15","personName":"정민정","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 평안한 삶이 지속되길","lines":["평안한 삶이 지속되길"],"categories":["건강"],"characterCount":14},{"id":"2026-03-29-p16","personId":"p16","personName":"정아름","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 하나님이 주신 마음으로 비젼을 계속 준비하고 세워나가길\n2. 이번주 새벽예배 참석할 수 있길","lines":["하나님이 주신 마음으로 비젼을 계속 준비하고 세워나가길","이번주 새벽예배 참석할 수 있길"],"categories":["신앙","건강"],"characterCount":54},{"id":"2026-03-29-p07","personId":"p07","personName":"조이삭","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 겸손과 죄인됨을 하루하루 깨달을 수 있길\n2. 하나님의 때에 배우자 만날 수 있길","lines":["겸손과 죄인됨을 하루하루 깨달을 수 있길","하나님의 때에 배우자 만날 수 있길"],"categories":["가정/관계","신앙"],"characterCount":48},{"id":"2026-03-29-p08","personId":"p08","personName":"최두호","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 영육간의 강건함과 평안함 주시길","lines":["영육간의 강건함과 평안함 주시길"],"categories":["건강"],"characterCount":20},{"id":"2026-03-29-p10","personId":"p10","personName":"함인성","weekId":"2026-03-29","weekLabel":"3.29","sheet":"3월 주간","content":"1. 직장의 일이 많아도 하나님 안에서 평안히 견뎌내길\n2. 내일부터 새벽예배 가운데 받은 은혜를 잘 쌓아두길","lines":["직장의 일이 많아도 하나님 안에서 평안히 견뎌내길","내일부터 새벽예배 가운데 받은 은혜를 잘 쌓아두길"],"categories":["신앙","일/학업","건강"],"characterCount":61},{"id":"2026-04-05-p01","personId":"p01","personName":"권혜연","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 하나님의 사랑을 직접 경험할 수 있길\n2. 아이들을 하나님의 지혜로 교육할 수 있길","lines":["하나님의 사랑을 직접 경험할 수 있길","아이들을 하나님의 지혜로 교육할 수 있길"],"categories":["가정/관계","신앙","일/학업"],"characterCount":49},{"id":"2026-04-05-p02","personId":"p02","personName":"김열","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 힘든 일, 스트레스 받는 것을 잘 내려놓을 수 있길\n2. 나를 통해 사람들이 하나님을 느낄 수 있길","lines":["힘든 일, 스트레스 받는 것을 잘 내려놓을 수 있길","나를 통해 사람들이 하나님을 느낄 수 있길"],"categories":["건강","신앙","일/학업"],"characterCount":58},{"id":"2026-04-05-p11","personId":"p11","personName":"김진주","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 기도하고 있는 제목들 무너지지 않고 \n계속 기도할 수 있길\n2. 일할 수 있는 체력을 기를 수 있길","lines":["기도하고 있는 제목들 무너지지 않고","계속 기도할 수 있길","일할 수 있는 체력을 기를 수 있길"],"categories":["건강","신앙","일/학업"],"characterCount":58},{"id":"2026-04-05-p12","personId":"p12","personName":"김찬송","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 여수(4월), 독일(6월) 출장 평안히 잘 다녀올 수 있도록","lines":["여수(4월), 독일(6월) 출장 평안히 잘 다녀올 수 있도록"],"categories":["건강","일/학업"],"characterCount":36},{"id":"2026-04-05-p13","personId":"p13","personName":"박정현","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"일상에서 감사를 잊지 않을수있도록","lines":["일상에서 감사를 잊지 않을수있도록"],"categories":["일/학업"],"characterCount":18},{"id":"2026-04-05-p04","personId":"p04","personName":"신기완","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 일에 대한 민첩함이 생기도록\n2. 잠을 잘 자서 피곤함이 잘 풀리도록","lines":["일에 대한 민첩함이 생기도록","잠을 잘 자서 피곤함이 잘 풀리도록"],"categories":["건강","신앙","일/학업"],"characterCount":41},{"id":"2026-04-05-p05","personId":"p05","personName":"유연욱","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 마음이 평안할 수 있도록","lines":["마음이 평안할 수 있도록"],"categories":["건강"],"characterCount":16},{"id":"2026-04-05-p14","personId":"p14","personName":"장유진","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 일하는 가운데 하나님의 지혜로 문제가 해결될 수 있길(행사 가운데 지혜주셔서 분주하지 않길)\n2. 고립된 생각에서 벗어나서 하나님의 관점으로 생각하며, 자유할 수 있길","lines":["일하는 가운데 하나님의 지혜로 문제가 해결될 수 있길(행사 가운데 지혜주셔서 분주하지 않길)","고립된 생각에서 벗어나서 하나님의 관점으로 생각하며, 자유할 수 있길"],"categories":["신앙","일/학업"],"characterCount":96},{"id":"2026-04-05-p15","personId":"p15","personName":"정민정","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 주위사람들의 평안과 중보할 수 있길","lines":["주위사람들의 평안과 중보할 수 있길"],"categories":["건강","사역/섬김"],"characterCount":22},{"id":"2026-04-05-p16","personId":"p16","personName":"정아름","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 아름이와 함께 일하시는 데스크 선생님의 마음을 하나님께서 만져주셔서 아름이와 관계가 잘 풀리 수 있길\n2. 데스크 선생님을 사랑하는 마음 주시길","lines":["아름이와 함께 일하시는 데스크 선생님의 마음을 하나님께서 만져주셔서 아름이와 관계가 잘 풀리 수 있길","데스크 선생님을 사랑하는 마음 주시길"],"categories":["가정/관계","건강","신앙"],"characterCount":83},{"id":"2026-04-05-p07","personId":"p07","personName":"조이삭","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 세계 평화를 위해 중보를 할 수 있길","lines":["세계 평화를 위해 중보를 할 수 있길"],"categories":["사역/섬김"],"characterCount":23},{"id":"2026-04-05-p08","personId":"p08","personName":"최두호","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 말씀을 가까이하고, 영적인 감이 떨어지지 않도록","lines":["말씀을 가까이하고, 영적인 감이 떨어지지 않도록"],"categories":["신앙"],"characterCount":29},{"id":"2026-04-05-p09","personId":"p09","personName":"최여름","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1.  병사들이 힘들어하지 않고 마음관리가 잘 되었으면 좋겠음\n2. 5월에 체력측정 준비 잘 할 수 있길","lines":["병사들이 힘들어하지 않고 마음관리가 잘 되었으면 좋겠음","5월에 체력측정 준비 잘 할 수 있길"],"categories":["건강"],"characterCount":58},{"id":"2026-04-05-p10","personId":"p10","personName":"함인성","weekId":"2026-04-05","weekLabel":"4.5","sheet":"4월 주간","content":"1. 죄 없으신 주님께서 사랑으로 우리를 대속하셨듯이 나도 회사에서 만나는 고객들을 사랑으로 대할 수 있도록\n2. 설교 내용처럼 빗장을 걸어잠근 주변 사람들, 기도요청하는 사람들을 위해 꾸준히 중보할 수 있기를","lines":["죄 없으신 주님께서 사랑으로 우리를 대속하셨듯이 나도 회사에서 만나는 고객들을 사랑으로 대할 수 있도록","설교 내용처럼 빗장을 걸어잠근 주변 사람들, 기도요청하는 사람들을 위해 꾸준히 중보할 수 있기를"],"categories":["신앙","가정/관계","건강"],"characterCount":117},{"id":"2026-04-12-p01","personId":"p01","personName":"권혜연","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 말씀과 기도가 있는 하나님중심의 삶 \n2. 하나님 사랑 안에서 아이들 지도할 수 있길","lines":["말씀과 기도가 있는 하나님중심의 삶","하나님 사랑 안에서 아이들 지도할 수 있길"],"categories":["신앙","가정/관계"],"characterCount":50},{"id":"2026-04-12-p02","personId":"p02","personName":"김열","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 건강관리 잘 할 수 있도록","lines":["건강관리 잘 할 수 있도록"],"categories":["건강"],"characterCount":17},{"id":"2026-04-12-p04","personId":"p04","personName":"신기완","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 일할 때 실수하지 않도록\n2. 순발력있게 일할 수 있도록","lines":["일할 때 실수하지 않도록","순발력있게 일할 수 있도록"],"categories":["일/학업"],"characterCount":34},{"id":"2026-04-12-p06","personId":"p06","personName":"이동혁","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 삶 속에서 숨은 감사를 찾을 수 있도록\n2. 교수님을 사랑의 마음으로 바라볼 수 있도록(그런 힘을 하나님께서 주시길)","lines":["삶 속에서 숨은 감사를 찾을 수 있도록","교수님을 사랑의 마음으로 바라볼 수 있도록(그런 힘을 하나님께서 주시길)"],"categories":["가정/관계","건강","신앙"],"characterCount":68},{"id":"2026-04-12-p14","personId":"p14","personName":"장유진","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 굳건한 믿음으로 방향을 잡고 잘 나아갈 수 있길","lines":["굳건한 믿음으로 방향을 잡고 잘 나아갈 수 있길"],"categories":["신앙"],"characterCount":29},{"id":"2026-04-12-p16","personId":"p16","personName":"정아름","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 서유선선생님 좋은 목장에 배정받고, 하나님의 비젼을 찾고 믿음이 성장할 수 있길\n2. 사랑하기 어려운 학생을 사랑할 수 있길","lines":["서유선선생님 좋은 목장에 배정받고, 하나님의 비젼을 찾고 믿음이 성장할 수 있길","사랑하기 어려운 학생을 사랑할 수 있길"],"categories":["신앙","가정/관계","사역/섬김"],"characterCount":72},{"id":"2026-04-12-p07","personId":"p07","personName":"조이삭","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 삶의 방향과 목적을 다시 깨달을 수 있는 시간 갖길\n2. 하나님의 때에 배우자 만날 수 있길","lines":["삶의 방향과 목적을 다시 깨달을 수 있는 시간 갖길","하나님의 때에 배우자 만날 수 있길"],"categories":["가정/관계","신앙"],"characterCount":54},{"id":"2026-04-12-p08","personId":"p08","personName":"최두호","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 하나님에 대한 거룩한 자극을 지속적으로 받길\n2. 한 주간 떳떳하게 주님의 제자로 살아갈 수 있길","lines":["하나님에 대한 거룩한 자극을 지속적으로 받길","한 주간 떳떳하게 주님의 제자로 살아갈 수 있길"],"categories":["신앙","사역/섬김"],"characterCount":57},{"id":"2026-04-12-p10","personId":"p10","personName":"함인성","weekId":"2026-04-12","weekLabel":"4.12","sheet":"4월 주간","content":"1. 발의 아픈 증상이 치유되길","lines":["발의 아픈 증상이 치유되길"],"categories":["기타"],"characterCount":17},{"id":"2026-04-26-p01","personId":"p01","personName":"권혜연","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 공개수업을 평안하게 준비하고 잘 진행할 수 있도록\n2. 말씀 중심의 삶 살 수 있도록","lines":["공개수업을 평안하게 준비하고 잘 진행할 수 있도록","말씀 중심의 삶 살 수 있도록"],"categories":["건강","신앙","일/학업"],"characterCount":50},{"id":"2026-04-26-p11","personId":"p11","personName":"김진주","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 주님이 기뻐하실 수 있는 것이 무엇일지 생각하며 모든 것을 주님께 맡겨 드릴 수 있는 마음을 갖길\n2. 주님의 은혜와 사랑이 가족들에게 닿을 수 있길","lines":["주님이 기뻐하실 수 있는 것이 무엇일지 생각하며 모든 것을 주님께 맡겨 드릴 수 있는 마음을 갖길","주님의 은혜와 사랑이 가족들에게 닿을 수 있길"],"categories":["가정/관계","신앙","건강"],"characterCount":86},{"id":"2026-04-26-p04","personId":"p04","personName":"신기완","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 한 달 후에 이비인후과 치료 받을 수 있길\n2. 일할 때 실수 적게 할 수 있도록","lines":["한 달 후에 이비인후과 치료 받을 수 있길","일할 때 실수 적게 할 수 있도록"],"categories":["건강","일/학업"],"characterCount":48},{"id":"2026-04-26-p14","personId":"p14","personName":"장유진","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 하나님 안에서 중심을 잘 잡고 가족들이 평안할 수 있도록\n2. 한 주 주님께서 기뻐하시는 모습으로 살아갈 수 있길","lines":["하나님 안에서 중심을 잘 잡고 가족들이 평안할 수 있도록","한 주 주님께서 기뻐하시는 모습으로 살아갈 수 있길"],"categories":["신앙","가정/관계","건강"],"characterCount":66},{"id":"2026-04-26-p16","personId":"p16","personName":"정아름","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 하나님의 사랑으로 아이들을 대할 수 있도록\n2. 새벽예배 때 은혜받으실 수 있도록","lines":["하나님의 사랑으로 아이들을 대할 수 있도록","새벽예배 때 은혜받으실 수 있도록"],"categories":["신앙","가정/관계"],"characterCount":48},{"id":"2026-04-26-p08","personId":"p08","personName":"최두호","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 한 주간 말씀에 대해 더 고민하고 나아가는 동시에 행동이 있는 믿음의 삶 살길\n2. 배우자에 대한 기도시작하길","lines":["한 주간 말씀에 대해 더 고민하고 나아가는 동시에 행동이 있는 믿음의 삶 살길","배우자에 대한 기도시작하길"],"categories":["신앙","가정/관계"],"characterCount":64},{"id":"2026-04-26-p09","personId":"p09","personName":"최여름","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 자비를 베풀 수 있는 삶을 살 길","lines":["자비를 베풀 수 있는 삶을 살 길"],"categories":["기타"],"characterCount":21},{"id":"2026-04-26-p10","personId":"p10","personName":"함인성","weekId":"2026-04-26","weekLabel":"4.26","sheet":"4월 주간","content":"1. 고객을 응대할 때 하나님의 눈으로 바라보고 차별하지 대하지 않도록","lines":["고객을 응대할 때 하나님의 눈으로 바라보고 차별하지 대하지 않도록"],"categories":["신앙"],"characterCount":39},{"id":"2026-05-03-p01","personId":"p01","personName":"권혜연","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 가르치기 어려운 유아를 하나님의 사랑 안에서 교육하고, 수업 시간에 착석하는 시간이 늘어나길\n2. 부모님을 사랑의 마음으로 바라보고 사랑의 언어로 말할 수 있길","lines":["가르치기 어려운 유아를 하나님의 사랑 안에서 교육하고, 수업 시간에 착석하는 시간이 늘어나길","부모님을 사랑의 마음으로 바라보고 사랑의 언어로 말할 수 있길"],"categories":["가정/관계","일/학업","건강"],"characterCount":92},{"id":"2026-05-03-p11","personId":"p11","personName":"김진주","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 내 기준이 아니라 하나님께 구하고 경청하길\n2. 주님 말씀을 매일 곁에 두고 지내길","lines":["내 기준이 아니라 하나님께 구하고 경청하길","주님 말씀을 매일 곁에 두고 지내길"],"categories":["신앙","일/학업"],"characterCount":49},{"id":"2026-05-03-p04","personId":"p04","personName":"신기완","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 이번주는 일 스트레스 많이 안 받고 행복하길\n2. 복음반에 대한 고민이 해결되길","lines":["이번주는 일 스트레스 많이 안 받고 행복하길","복음반에 대한 고민이 해결되길"],"categories":["건강","사역/섬김","신앙"],"characterCount":47},{"id":"2026-05-03-p14","personId":"p14","personName":"장유진","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 진행하고 있는 프로젝트가 하나님 안에서 평안가운데 잘 진행되길\n2. 기도를 하루에 5분씩 하며 분주한 마음이 정리되길","lines":["진행하고 있는 프로젝트가 하나님 안에서 평안가운데 잘 진행되길","기도를 하루에 5분씩 하며 분주한 마음이 정리되길"],"categories":["건강","신앙"],"characterCount":68},{"id":"2026-05-03-p16","personId":"p16","personName":"정아름","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 학원에서 어린이날 행사를 지혜롭게 진행할 수 있길","lines":["학원에서 어린이날 행사를 지혜롭게 진행할 수 있길"],"categories":["일/학업"],"characterCount":30},{"id":"2026-05-03-p07","personId":"p07","personName":"조이삭","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 하나님 한 분으로 만족하길","lines":["하나님 한 분으로 만족하길"],"categories":["신앙"],"characterCount":17},{"id":"2026-05-03-p09","personId":"p09","personName":"최여름","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 이번 주 측정, 감사, 점검 잘 끝나기를\n2. 바쁜 일정 소화할 때 내 의지보다는 믿고 맡길 수 있길","lines":["이번 주 측정, 감사, 점검 잘 끝나기를","바쁜 일정 소화할 때 내 의지보다는 믿고 맡길 수 있길"],"categories":["일/학업"],"characterCount":59},{"id":"2026-05-03-p10","personId":"p10","personName":"함인성","weekId":"2026-05-03","weekLabel":"5.3","sheet":"5월 주간","content":"1. 직장 안에서 문제(민원인)가 하나님 안에서 지혜롭게 해결되길\n2. 말과 생각이 하나님의 자녀답게 행동할 수 있길","lines":["직장 안에서 문제(민원인)가 하나님 안에서 지혜롭게 해결되길","말과 생각이 하나님의 자녀답게 행동할 수 있길"],"categories":["신앙","일/학업"],"characterCount":65}],"categories":["신앙","건강","일/학업","가정/관계","사역/섬김","기타"]}</script>
+    <script>
+      const PASSWORD_KEY = "mokjang-dashboard-unlocked";
+      const ACCESS_HASH = "da1bef3d778778d3e7f0d3becaac6f1a63ed0e3706b65160880fb8e295e1279c";
+
+      const state = {
+        data: null,
+        selectedWeekId: "latest",
+        selectedCategory: "all",
+        selectedPersonId: null,
+        search: "",
+      };
+
+      const els = {
+        login: document.querySelector("#login"),
+        app: document.querySelector("#app"),
+        loginForm: document.querySelector("#loginForm"),
+        passwordInput: document.querySelector("#passwordInput"),
+        loginMessage: document.querySelector("#loginMessage"),
+        generatedAt: document.querySelector("#generatedAt"),
+        logoutButton: document.querySelector("#logoutButton"),
+        weekSelect: document.querySelector("#weekSelect"),
+        categorySelect: document.querySelector("#categorySelect"),
+        searchInput: document.querySelector("#searchInput"),
+        overviewButton: document.querySelector("#overviewButton"),
+        personList: document.querySelector("#personList"),
+        mainView: document.querySelector("#mainView"),
+      };
+
+      const categoryMeta = {
+        "신앙": { className: "faith", color: "#4f7c54" },
+        "건강": { className: "health", color: "#a65d81" },
+        "일/학업": { className: "work", color: "#547b9f" },
+        "가정/관계": { className: "family", color: "#bd7451" },
+        "사역/섬김": { className: "service", color: "#b18c3c" },
+        "기타": { className: "", color: "#2f6f73" },
+      };
+
+      function escapeHtml(value = "") {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function sha256(text) {
+        if (!crypto.subtle) {
+          throw new Error("이 브라우저에서는 암호 확인 기능을 사용할 수 없습니다.");
+        }
+        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+        return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      }
+
+      function formatDateTime(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return new Intl.DateTimeFormat("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(date);
+      }
+
+      function loadEmbeddedData() {
+        const node = document.querySelector("#dashboardData");
+        state.data = JSON.parse(node.textContent);
+      }
+
+      function getLatestWeekId() {
+        return state.data.weeks.at(-1)?.id ?? "";
+      }
+
+      function selectedWeek() {
+        const id = state.selectedWeekId === "latest" ? getLatestWeekId() : state.selectedWeekId;
+        return state.data.weeks.find((week) => week.id === id) ?? state.data.weeks.at(-1);
+      }
+
+      function matchesSearch(entryOrPerson) {
+        const keyword = state.search.trim().toLowerCase();
+        if (!keyword) return true;
+        const haystack = [
+          entryOrPerson.name,
+          entryOrPerson.personName,
+          entryOrPerson.content,
+          entryOrPerson.annualPrayer,
+          entryOrPerson.verse,
+          entryOrPerson.categories?.join(" "),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(keyword);
+      }
+
+      function filterEntries(entries) {
+        return entries.filter((entry) => {
+          const categoryMatch = state.selectedCategory === "all" || entry.categories.includes(state.selectedCategory);
+          return categoryMatch && matchesSearch(entry);
+        });
+      }
+
+      function entriesForWeek(weekId) {
+        return state.data.entries.filter((entry) => entry.weekId === weekId);
+      }
+
+      function entriesForPerson(personId) {
+        return state.data.entries.filter((entry) => entry.personId === personId);
+      }
+
+      function categoriesForEntries(entries) {
+        return entries.reduce((counts, entry) => {
+          for (const category of entry.categories) {
+            counts[category] = (counts[category] ?? 0) + 1;
+          }
+          return counts;
+        }, {});
+      }
+
+      function categoryPill(category) {
+        const meta = categoryMeta[category] ?? categoryMeta["기타"];
+        return `<span class="category-pill ${meta.className}">${escapeHtml(category)}</span>`;
+      }
+
+      function entryCard(entry) {
+        return `
+          <article class="entry-card">
+            <div class="entry-head">
+              <h3>${escapeHtml(entry.personName)}</h3>
+              <span class="week-pill">${escapeHtml(entry.weekLabel)}</span>
+            </div>
+            <p>${escapeHtml(entry.content)}</p>
+            <div class="tags">${entry.categories.map(categoryPill).join("")}</div>
+          </article>
+        `;
+      }
+
+      function personButton(person) {
+        const active = state.selectedPersonId === person.id ? "active" : "";
+        const count = entriesForPerson(person.id).length;
+        return `
+          <button class="person-link ${active}" type="button" data-person-id="${escapeHtml(person.id)}">
+            <span class="avatar" style="background:${person.color}">${escapeHtml(person.initials)}</span>
+            <span>
+              <strong>${escapeHtml(person.name)}</strong>
+              <small>${count}개 기록</small>
+            </span>
+          </button>
+        `;
+      }
+
+      function renderSidebar() {
+        els.overviewButton.classList.toggle("active", !state.selectedPersonId);
+        els.personList.innerHTML = state.data.people.filter(matchesSearch).map(personButton).join("");
+      }
+
+      function renderFilters() {
+        const currentWeekId = selectedWeek()?.id;
+        els.weekSelect.innerHTML = [
+          `<option value="latest">최근 주간</option>`,
+          ...state.data.weeks
+            .slice()
+            .reverse()
+            .map((week) => `<option value="${escapeHtml(week.id)}">${escapeHtml(week.label)}</option>`),
+        ].join("");
+        els.weekSelect.value = state.selectedWeekId === "latest" ? "latest" : currentWeekId;
+
+        const categories = Object.keys(categoryMeta);
+        els.categorySelect.innerHTML = [
+          `<option value="all">전체 분류</option>`,
+          ...categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`),
+        ].join("");
+        els.categorySelect.value = state.selectedCategory;
+      }
+
+      function renderProgress(counts, total) {
+        const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        if (!rows.length) {
+          return `<div class="empty-state">분류할 기도제목이 없습니다.</div>`;
+        }
+
+        return `
+          <div class="progress-list">
+            ${rows
+              .map(([category, count]) => {
+                const meta = categoryMeta[category] ?? categoryMeta["기타"];
+                const width = total > 0 ? Math.round((count / total) * 100) : 0;
+                return `
+                  <div class="progress-item">
+                    <div class="progress-label">
+                      <span>${escapeHtml(category)}</span>
+                      <span>${count}개</span>
+                    </div>
+                    <div class="progress-track">
+                      <div class="progress-bar" style="width:${width}%; background:${meta.color}"></div>
+                    </div>
+                  </div>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderOverview() {
+        const week = selectedWeek();
+        const weekEntriesRaw = entriesForWeek(week.id);
+        const weekEntries = filterEntries(weekEntriesRaw);
+        const peopleWithEntry = new Set(weekEntriesRaw.map((entry) => entry.personId));
+        const missingPeople = state.data.people.filter((person) => !peopleWithEntry.has(person.id));
+        const categoryCounts = categoriesForEntries(weekEntries);
+        const totalPeople = state.data.people.length;
+        const updateRate = totalPeople ? Math.round((peopleWithEntry.size / totalPeople) * 100) : 0;
+        const yearlyReady = state.data.people.filter((person) => person.annualPrayer || person.verse).length;
+
+        els.mainView.innerHTML = `
+          <section class="section-header">
+            <div>
+              <h2>통합 대시보드</h2>
+              <p>사람 이름을 클릭하면 개인별 현황을 보실 수 있습니다</p>
+            </div>
+            <span class="status-pill">${peopleWithEntry.size}/${totalPeople}명 업데이트</span>
+          </section>
+
+          <section class="kpi-grid">
+            <article class="kpi-card">
+              <span>이번 주 업데이트율</span>
+              <strong>${updateRate}%</strong>
+              <p>${peopleWithEntry.size}명이 이번 주 기도제목을 남겼습니다.</p>
+            </article>
+            <article class="kpi-card">
+              <span>이번 주 기도제목</span>
+              <strong>${weekEntriesRaw.length}</strong>
+              <p>필터 적용 시 ${weekEntries.length}개가 표시됩니다.</p>
+            </article>
+            <article class="kpi-card">
+              <span>전체 기록</span>
+              <strong>${state.data.entries.length}</strong>
+              <p>${state.data.weeks.length}개 주간의 기록입니다.</p>
+            </article>
+            <article class="kpi-card">
+              <span>올해 기도제목</span>
+              <strong>${yearlyReady}</strong>
+              <p>올해 말씀 또는 기도제목이 등록된 인원입니다.</p>
+            </article>
+          </section>
+
+          <section class="grid-two">
+            <div class="panel">
+              <h3>이번 주 함께 기도할 제목</h3>
+              ${
+                weekEntries.length
+                  ? `<div class="entry-grid">${weekEntries.map(entryCard).join("")}</div>`
+                  : `<div class="empty-state">선택한 조건에 맞는 이번 주 기도제목이 없습니다.</div>`
+              }
+            </div>
+
+            <div class="panel">
+              <h3>분류별 흐름</h3>
+              ${renderProgress(categoryCounts, weekEntries.length)}
+              <h3 style="margin-top:24px">아직 업데이트 없음</h3>
+              ${
+                missingPeople.length
+                  ? `<div class="chips">${missingPeople
+                      .map((person) => `<button class="chip-button" type="button" data-person-id="${escapeHtml(person.id)}">${escapeHtml(person.name)}</button>`)
+                      .join("")}</div>`
+                  : `<p class="small-note">모든 인원이 이번 주 기도제목을 남겼습니다.</p>`
+              }
+            </div>
+          </section>
+        `;
+      }
+
+      function renderPerson(personId) {
+        const person = state.data.people.find((item) => item.id === personId);
+        if (!person) {
+          state.selectedPersonId = null;
+          render();
+          return;
+        }
+
+        const week = selectedWeek();
+        const allEntries = entriesForPerson(person.id);
+        const filteredEntries = filterEntries(allEntries);
+        const currentEntry = allEntries.find((entry) => entry.weekId === week.id);
+        const categoryCounts = categoriesForEntries(filteredEntries);
+
+        els.mainView.innerHTML = `
+          <section class="section-header">
+            <div>
+              <h2>${escapeHtml(person.name)} 기도 대시보드</h2>
+              <p>${allEntries.length}개 주간 기록과 올해 기도제목을 함께 봅니다.</p>
+            </div>
+            <span class="status-pill">${escapeHtml(week.label)}</span>
+          </section>
+
+          <section class="person-hero">
+            <div class="verse-box">
+              <p>${escapeHtml(person.verse || "올해 말씀이 아직 비어 있습니다.")}</p>
+            </div>
+            <div class="annual-box">
+              <h3>올해 기도제목</h3>
+              <p>${escapeHtml(person.annualPrayer || "올해 기도제목이 아직 비어 있습니다.")}</p>
+            </div>
+          </section>
+
+          <section class="grid-two">
+            <div class="panel">
+              <h3>${escapeHtml(week.label)} 기도제목</h3>
+              ${currentEntry ? entryCard(currentEntry) : `<div class="empty-state">선택한 주간에는 등록된 기도제목이 없습니다.</div>`}
+            </div>
+            <div class="panel">
+              <h3>개인 분류 흐름</h3>
+              ${renderProgress(categoryCounts, filteredEntries.length)}
+            </div>
+          </section>
+
+          <section class="panel" style="margin-top:18px">
+            <h3>주간 기록 타임라인</h3>
+            ${
+              filteredEntries.length
+                ? `<div class="timeline">
+                    ${filteredEntries
+                      .slice()
+                      .reverse()
+                      .map(
+                        (entry) => `
+                          <div class="timeline-item">
+                            <div class="timeline-date">${escapeHtml(entry.weekLabel)}</div>
+                            <div class="timeline-body">
+                              <p>${escapeHtml(entry.content)}</p>
+                              <div class="tags">${entry.categories.map(categoryPill).join("")}</div>
+                            </div>
+                          </div>
+                        `,
+                      )
+                      .join("")}
+                  </div>`
+                : `<div class="empty-state">선택한 조건에 맞는 기록이 없습니다.</div>`
+            }
+          </section>
+        `;
+      }
+
+      function render() {
+        renderFilters();
+        renderSidebar();
+        if (state.selectedPersonId) {
+          renderPerson(state.selectedPersonId);
+        } else {
+          renderOverview();
+        }
+      }
+
+      function unlock() {
+        loadEmbeddedData();
+        els.generatedAt.textContent = `생성 ${formatDateTime(state.data.generatedAt)}`;
+        els.login.hidden = true;
+        els.app.hidden = false;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showLoginSuccess() {
+        els.loginForm.classList.add("is-success");
+        els.loginMessage.classList.add("success");
+        els.loginMessage.textContent = "로그인 완료, 아래로 내리면 내용을 확인할 수 있습니다";
+      }
+
+      function bindEvents() {
+        els.loginForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const password = els.passwordInput.value.trim();
+          els.loginMessage.classList.remove("success");
+          if (!password) {
+            els.loginMessage.textContent = "암호를 입력해 주세요.";
+            return;
+          }
+
+          try {
+            const hashed = await sha256(password);
+            if (hashed !== ACCESS_HASH) {
+              els.loginMessage.textContent = "암호가 맞지 않습니다.";
+              return;
+            }
+            sessionStorage.setItem(PASSWORD_KEY, ACCESS_HASH);
+            showLoginSuccess();
+            window.setTimeout(unlock, 650);
+          } catch (error) {
+            els.loginMessage.textContent = error.message;
+          }
+        });
+
+        els.logoutButton.addEventListener("click", () => {
+          sessionStorage.removeItem(PASSWORD_KEY);
+          window.location.reload();
+        });
+
+        els.weekSelect.addEventListener("change", (event) => {
+          state.selectedWeekId = event.target.value;
+          render();
+        });
+
+        els.categorySelect.addEventListener("change", (event) => {
+          state.selectedCategory = event.target.value;
+          render();
+        });
+
+        els.searchInput.addEventListener("input", (event) => {
+          state.search = event.target.value;
+          render();
+        });
+
+        els.overviewButton.addEventListener("click", () => {
+          state.selectedPersonId = null;
+          render();
+          els.mainView.focus();
+        });
+
+        document.addEventListener("click", (event) => {
+          const personTarget = event.target.closest("[data-person-id]");
+          if (!personTarget) return;
+          state.selectedPersonId = personTarget.dataset.personId;
+          render();
+          els.mainView.focus();
+        });
+      }
+
+      function init() {
+        bindEvents();
+        if (sessionStorage.getItem(PASSWORD_KEY) === ACCESS_HASH) {
+          unlock();
+        } else {
+          els.passwordInput.focus();
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>
